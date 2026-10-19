@@ -45,7 +45,7 @@ PYCATCH22_EQUIVALENT_FEATURES = [
     "entropy_pairs",
     "rs_range",
     "dfa",
-    "low_freq_power",
+    "centroid_freq",
 ]
 
 
