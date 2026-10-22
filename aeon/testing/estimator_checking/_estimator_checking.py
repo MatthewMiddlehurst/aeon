@@ -250,24 +250,24 @@ def check_estimator(
         try:
             check()
             if verbose:
-                print(f"PASSED: {name}")  # noqa T001
+                print(f"PASSED: {check_name}")  # noqa: T201
             results[check_name] = "PASSED"
             passed += 1
         except SkipTest as skip:
             if verbose:
-                print(f"SKIPPED: {name}")  # noqa T001
+                print(f"SKIPPED: {check_name}")  # noqa: T201
             results[check_name] = "SKIPPED: " + str(skip)
             skipped += 1
         except Exception as exception:
             if raise_exceptions:
                 raise exception
             elif verbose:
-                print(f"FAILED: {name}")  # noqa T001
+                print(f"FAILED: {check_name}")  # noqa: T201
             results[check_name] = "FAILED: " + str(exception)
             failed += 1
 
     if verbose:
-        print(  # noqa T001
+        print(  # noqa: T201
             f"Tests run: {passed + skipped + failed}, Passed: {passed}, "
             f"Failed: {failed}, Skipped: {skipped}"
         )

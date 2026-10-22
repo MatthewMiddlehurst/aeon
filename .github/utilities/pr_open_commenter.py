@@ -127,7 +127,7 @@ These checkboxes will add labels to enable or disable CI functionality for this 
 
 </p>
 </details>
-    """  # noqa
+    """  # noqa: E501
 
 
 def tick_label_boxes(body):

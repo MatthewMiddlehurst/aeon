@@ -124,3 +124,17 @@ def test_check_estimator_subset_tests():
     results_tests = [*results.keys()]
 
     assert results_tests == expected_tests
+
+
+def test_check_estimator_verbose(capsys):
+    """Test that verbose output prints the outcome of each check and a summary."""
+    results = check_estimator(
+        MockClassifier,
+        verbose=True,
+        checks_to_run=["check_get_params", "check_inheritance"],
+    )
+    out = capsys.readouterr().out
+
+    for check_name, result in results.items():
+        assert f"{result.split(':')[0]}: {check_name}" in out
+    assert f"Tests run: {len(results)}" in out
