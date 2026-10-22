@@ -37,7 +37,7 @@ def check_series_anomaly_detector_overrides_and_tags(estimator_class):
     if isinstance(X_inner_type, str):
         assert X_inner_type in VALID_SERIES_INNER_TYPES
     else:  # must be a list
-        assert all([t in VALID_SERIES_INNER_TYPES for t in X_inner_type])
+        assert all(t in VALID_SERIES_INNER_TYPES for t in X_inner_type)
 
 
 def check_series_anomaly_detector_output(estimator, datatype):

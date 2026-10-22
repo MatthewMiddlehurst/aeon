@@ -161,7 +161,7 @@ def check_classifier_overrides_and_tags(estimator_class):
     if isinstance(X_inner_type, str):
         assert X_inner_type in COLLECTIONS_DATA_TYPES
     else:  # must be a list
-        assert all([t in COLLECTIONS_DATA_TYPES for t in X_inner_type])
+        assert all(t in COLLECTIONS_DATA_TYPES for t in X_inner_type)
 
     # one of X_inner_types must be capable of storing unequal length
     if estimator_class.get_class_tag("capability:unequal_length"):
@@ -169,7 +169,7 @@ def check_classifier_overrides_and_tags(estimator_class):
         if isinstance(X_inner_type, str):
             assert X_inner_type in valid_unequal_types
         else:  # must be a list
-            assert any([t in valid_unequal_types for t in X_inner_type])
+            assert any(t in valid_unequal_types for t in X_inner_type)
 
     valid_algorithm_types = [
         "distance",

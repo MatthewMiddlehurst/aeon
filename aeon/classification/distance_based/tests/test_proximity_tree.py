@@ -27,7 +27,7 @@ def test_get_candidate_splitter():
 
     assert isinstance(exemplars, dict)
     assert len(exemplars) == 2
-    assert all([isinstance(v, np.ndarray) for v in exemplars.values()])
+    assert all(isinstance(v, np.ndarray) for v in exemplars.values())
 
     expected_distances = [
         "euclidean",

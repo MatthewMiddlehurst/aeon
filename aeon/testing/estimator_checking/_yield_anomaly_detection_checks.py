@@ -45,7 +45,7 @@ def check_anomaly_detector_overrides_and_tags(estimator_class):
     if isinstance(X_inner_type, str):
         assert X_inner_type in ALL_TIME_SERIES_TYPES
     else:  # must be a list
-        assert all([t in ALL_TIME_SERIES_TYPES for t in X_inner_type])
+        assert all(t in ALL_TIME_SERIES_TYPES for t in X_inner_type)
 
     # Must have at least one set to True
     multi = estimator_class.get_class_tag(tag_name="capability:multivariate")

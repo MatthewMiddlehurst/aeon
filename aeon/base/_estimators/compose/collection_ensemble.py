@@ -112,50 +112,44 @@ class BaseCollectionEnsemble(ComposableEstimatorMixin, BaseCollectionEstimator):
 
         # can handle multivariate if all estimators can
         multivariate = all(
-            [
-                (
-                    e[1].get_tag(
-                        "capability:multivariate",
-                        raise_error=False,
-                        tag_value_default=False,
-                    )
-                    if isinstance(e[1], BaseAeonEstimator)
-                    else False
+            (
+                e[1].get_tag(
+                    "capability:multivariate",
+                    raise_error=False,
+                    tag_value_default=False,
                 )
-                for e in self._ensemble
-            ]
+                if isinstance(e[1], BaseAeonEstimator)
+                else False
+            )
+            for e in self._ensemble
         )
 
         # can handle missing values if all estimators can
         missing = all(
-            [
-                (
-                    e[1].get_tag(
-                        "capability:missing_values",
-                        raise_error=False,
-                        tag_value_default=False,
-                    )
-                    if isinstance(e[1], BaseAeonEstimator)
-                    else False
+            (
+                e[1].get_tag(
+                    "capability:missing_values",
+                    raise_error=False,
+                    tag_value_default=False,
                 )
-                for e in self._ensemble
-            ]
+                if isinstance(e[1], BaseAeonEstimator)
+                else False
+            )
+            for e in self._ensemble
         )
 
         # can handle unequal length if all estimators can
         unequal = all(
-            [
-                (
-                    e[1].get_tag(
-                        "capability:unequal_length",
-                        raise_error=False,
-                        tag_value_default=False,
-                    )
-                    if isinstance(e[1], BaseAeonEstimator)
-                    else False
+            (
+                e[1].get_tag(
+                    "capability:unequal_length",
+                    raise_error=False,
+                    tag_value_default=False,
                 )
-                for e in self._ensemble
-            ]
+                if isinstance(e[1], BaseAeonEstimator)
+                else False
+            )
+            for e in self._ensemble
         )
 
         tags_to_set = {

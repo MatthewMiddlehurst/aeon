@@ -260,7 +260,7 @@ class TEASER(BaseEarlyClassifier):
                 i,
                 check_random_state(rng.randint(np.iinfo(np.int32).max)),
             )
-            for i in range(0, next_idx)
+            for i in range(next_idx)
         )
 
         X_oc, probas, preds = zip(*out)

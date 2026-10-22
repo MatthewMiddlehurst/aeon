@@ -691,7 +691,7 @@ class AutoCES(BaseForecaster, IterativeForecastingMixin):
                 )
                 fitted._fit(y_arr)
                 fitted.is_fitted = True
-            except Exception as exc:  # noqa: BLE001
+            except Exception as exc:
                 results[code] = _ic_failure("error", repr(exc))
                 continue
             sse = max(float(fitted.sse_), 1e-12)

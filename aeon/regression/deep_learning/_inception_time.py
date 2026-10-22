@@ -280,7 +280,7 @@ class InceptionTimeRegressor(BaseRegressor):
         self.regressors_ = []
         rng = check_random_state(self.random_state)
 
-        for n in range(0, self.n_regressors):
+        for n in range(self.n_regressors):
             rgs = IndividualInceptionRegressor(
                 n_filters=self.n_filters,
                 n_conv_per_layer=self.n_conv_per_layer,

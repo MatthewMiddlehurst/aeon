@@ -218,7 +218,7 @@ class LITETimeRegressor(BaseRegressor):
         """
         rng = check_random_state(self.random_state)
 
-        for n in range(0, self.n_regressors):
+        for n in range(self.n_regressors):
             rgs = IndividualLITERegressor(
                 use_litemv=self.use_litemv,
                 n_filters=self.n_filters,

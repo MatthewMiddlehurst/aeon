@@ -173,7 +173,7 @@ def test_univariate_plots_run_without_error(series_to_plot, plot_func):
     assert (
         isinstance(fig, plt.Figure)
         and isinstance(ax, np.ndarray)
-        and all([isinstance(ax_, plt.Axes) for ax_ in ax])
+        and all(isinstance(ax_, plt.Axes) for ax_ in ax)
     )
 
     plt.close()

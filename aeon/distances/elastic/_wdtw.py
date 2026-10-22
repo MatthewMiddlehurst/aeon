@@ -218,7 +218,7 @@ def _wdtw_cost_matrix(
 
     max_size = max(x_size, y_size)
     weight_vector = np.array(
-        [1 / (1 + np.exp(-g * (i - max_size / 2))) for i in range(0, max_size)]
+        [1 / (1 + np.exp(-g * (i - max_size / 2))) for i in range(max_size)]
     )
 
     for i in range(x_size):

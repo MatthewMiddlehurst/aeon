@@ -169,28 +169,28 @@ def test_convert_X(internal_type, data):
     assert get_type(X2) == cls.get_tag("X_inner_type")
 
     # should all convert to numpy3D
-    cls.set_tags(**{"X_inner_type": "numpy3D"})
+    cls.set_tags(X_inner_type="numpy3D")
     X2 = cls._convert_X(X)
     assert get_type(X2) == "numpy3D"
 
     # Same as above but as list
-    cls.set_tags(**{"X_inner_type": ["numpy3D"]})
+    cls.set_tags(X_inner_type=["numpy3D"])
     X2 = cls._convert_X(X)
     assert get_type(X2) == "numpy3D"
 
     # Set cls inner type to just internal_type, should convert to internal_type
-    cls.set_tags(**{"X_inner_type": internal_type})
+    cls.set_tags(X_inner_type=internal_type)
     X2 = cls._convert_X(X)
     assert get_type(X2) == internal_type
 
     # Should not convert, as datatype is already present
-    cls.set_tags(**{"X_inner_type": ["numpy3D", data]})
+    cls.set_tags(X_inner_type=["numpy3D", data])
     X2 = cls._convert_X(X)
     assert get_type(X2) == data
 
     # Should always convert to numpy3D unless data is already internal_type, as it is
     # the highest priority type
-    cls.set_tags(**{"X_inner_type": ["numpy3D", internal_type]})
+    cls.set_tags(X_inner_type=["numpy3D", internal_type])
     X2 = cls._convert_X(X)
     assert get_type(X2) == "numpy3D" if data != internal_type else internal_type
 
@@ -200,13 +200,13 @@ def test_convert_X(internal_type, data):
 
             # Should stay as internal_type
             cls.set_tags(**{"capability:unequal_length": True})
-            cls.set_tags(**{"X_inner_type": ["np-list", data]})
+            cls.set_tags(X_inner_type=["np-list", data])
             X2 = cls._convert_X(X)
             assert get_type(X2) == data
 
             # np-list is the highest priority type for unequal length
             cls.set_tags(**{"capability:unequal_length": True})
-            cls.set_tags(**{"X_inner_type": [internal_type, "np-list"]})
+            cls.set_tags(X_inner_type=[internal_type, "np-list"])
             X2 = cls._convert_X(X)
             assert get_type(X2) == "np-list" if data != internal_type else internal_type
 

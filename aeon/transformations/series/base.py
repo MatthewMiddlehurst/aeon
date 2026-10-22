@@ -183,7 +183,6 @@ class BaseSeriesTransformer(BaseSeriesEstimator, BaseTransformer):
         y : Target variable, default=None
             Additional data, e.g., labels for transformation
         """
-        pass
 
     @abstractmethod
     def _transform(self, X, y=None):

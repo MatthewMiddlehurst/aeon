@@ -243,7 +243,7 @@ class TSFreshClassifier(BaseClassifier):
         else:
             dists = np.zeros((len(X), self.n_classes_))
             preds = self.estimator_.predict(self._transformer.transform(X))
-            for i in range(0, len(X)):
+            for i in range(len(X)):
                 dists[i, self._class_dictionary[preds[i]]] = 1
             return dists
 

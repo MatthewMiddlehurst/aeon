@@ -123,11 +123,11 @@ def plot_pairwise_scatter(
         else results_all.max() * 0.95
     )
 
-    if any([metric.lower() == i.lower() for i in accuracy_metrics]):
+    if any(metric.lower() == i.lower() for i in accuracy_metrics):
         max_value = min(max_value, 1.001)
         if lower_better:
             raise ValueError(f"lower_better must be False when metric is {metric}.")
-    elif any([metric.lower() == i.lower() for i in error_metrics]):
+    elif any(metric.lower() == i.lower() for i in error_metrics):
         if not lower_better:
             raise ValueError(f"lower_better must be True when metric is {metric}.")
 

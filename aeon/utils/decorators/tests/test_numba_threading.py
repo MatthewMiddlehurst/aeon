@@ -15,7 +15,6 @@ def check_n_jobs(n_jobs):
 
 def set_num_threads(n_threads):
     """Mock implementation of set_num_threads."""
-    pass
 
 
 @pytest.fixture
@@ -284,7 +283,6 @@ def test_fallback_when_no_attribute():
 
             class TestClass:
                 # No n_jobs attribute
-                pass
 
                 @numba_thread_handler
                 def process_data(self, data):

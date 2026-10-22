@@ -175,7 +175,7 @@ class AEDCNNNetwork(BaseDeepLearningNetwork):
         input_layer = tf.keras.layers.Input(input_shape)
 
         x = input_layer
-        for i in range(0, self.n_layers):
+        for i in range(self.n_layers):
             x = self._dcnn_layer(
                 x,
                 self._n_filters_encoder[i],
@@ -218,7 +218,7 @@ class AEDCNNNetwork(BaseDeepLearningNetwork):
 
         y = temp
 
-        for i in range(0, self.n_layers):
+        for i in range(self.n_layers):
             y = self._dcnn_layer_decoder(
                 y,
                 self._n_filters_encoder[::-1][i],

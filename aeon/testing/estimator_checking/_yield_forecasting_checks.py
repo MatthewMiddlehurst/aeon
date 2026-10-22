@@ -46,7 +46,7 @@ def check_forecaster_overrides_and_tags(estimator_class):
     if isinstance(X_inner_type, str):
         assert X_inner_type in VALID_SERIES_INNER_TYPES
     else:  # must be a list
-        assert all([t in VALID_SERIES_INNER_TYPES for t in X_inner_type])
+        assert all(t in VALID_SERIES_INNER_TYPES for t in X_inner_type)
 
     # Must have at least one set to True
     multi = estimator_class.get_class_tag(tag_name="capability:multivariate")

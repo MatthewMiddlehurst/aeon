@@ -87,7 +87,7 @@ class AutoCorrelationSeriesTransformer(BaseSeriesTransformer):
         n_channels, length = X.shape
         X_t = np.zeros((n_channels, max_lag), dtype=float)
 
-        for i in range(0, n_channels):
+        for i in range(n_channels):
             for lag in range(1, max_lag + 1):
                 lag_length = length - lag
                 x1 = X[i][:-lag]

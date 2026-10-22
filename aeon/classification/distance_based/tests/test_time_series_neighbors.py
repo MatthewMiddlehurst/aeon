@@ -68,7 +68,7 @@ def test_knn_on_unit_test(distance_key):
     knn.fit(X_train, y_train)
     pred = knn.predict(X_test)
     correct = 0
-    for j in range(0, len(pred)):
+    for j in range(len(pred)):
         if pred[j] == y_test[j]:
             correct = correct + 1
     assert correct == expected_correct[distance_key]
@@ -90,7 +90,7 @@ def test_knn_bounding_matrix(distance_key):
     knn.fit(X_train, y_train)
     pred = knn.predict(X_test)
     correct = 0
-    for j in range(0, len(pred)):
+    for j in range(len(pred)):
         if pred[j] == y_test[j]:
             correct = correct + 1
     assert correct == expected_correct_window[distance_key]
@@ -129,7 +129,7 @@ def test_knn_kneighbors(distance_key):
     classes, y = np.unique(y_train, return_inverse=True)
     pred = classes[y[indexes]]
     correct = 0
-    for j in range(0, len(pred)):
+    for j in range(len(pred)):
         if pred[j] == y_test[j]:
             correct = correct + 1
     assert correct == expected_correct_window[distance_key]

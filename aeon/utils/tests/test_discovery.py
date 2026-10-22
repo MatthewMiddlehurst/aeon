@@ -116,7 +116,7 @@ def test_all_estimators_by_tag(tags):
         assert isinstance(estimator[0], str)
         assert issubclass(estimator[1], BaseAeonEstimator)
         assert all(
-            [estimator[1].get_class_tag(tag) == value for tag, value in tags.items()]
+            estimator[1].get_class_tag(tag) == value for tag, value in tags.items()
         )
 
 

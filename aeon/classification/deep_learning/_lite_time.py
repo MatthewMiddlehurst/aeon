@@ -212,7 +212,7 @@ class LITETimeClassifier(BaseClassifier):
         self.classifiers_ = []
         rng = check_random_state(self.random_state)
 
-        for n in range(0, self.n_classifiers):
+        for n in range(self.n_classifiers):
             cls = IndividualLITEClassifier(
                 use_litemv=self.use_litemv,
                 n_filters=self.n_filters,

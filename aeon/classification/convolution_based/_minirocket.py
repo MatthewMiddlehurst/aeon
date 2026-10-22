@@ -194,7 +194,7 @@ class MiniRocketClassifier(BaseClassifier):
         else:
             dists = np.zeros((X.shape[0], self.n_classes_))
             preds = self.pipeline_.predict(X)
-            for i in range(0, X.shape[0]):
+            for i in range(X.shape[0]):
                 dists[i, np.where(self.classes_ == preds[i])] = 1
             return dists
 

@@ -608,17 +608,17 @@ def auto_ets(
     for error_type in range(1, 3):
         if error_type == 2 and not all_pos:
             continue
-        for trend_type in range(0, t_max):
+        for trend_type in range(t_max):
             if trend_type == 2 and not all_pos:
                 continue
-            for damped in range(0, 2):
+            for damped in range(2):
                 if trend_type == 0:
                     # without a trend, damping is irrelevant: one candidate
                     if damped == 1:
                         continue
                 elif damped_option != -1 and damped != damped_option:
                     continue
-                for seasonality_type in range(0, s_max):
+                for seasonality_type in range(s_max):
                     if seasonality_type == 2 and not all_pos:
                         continue
                     if (

@@ -103,18 +103,16 @@ class BaseCollectionChannelEnsemble(ComposableEstimatorMixin, BaseCollectionEsti
 
         # can handle missing values if all estimators can
         missing = all(
-            [
-                (
-                    e[1].get_tag(
-                        "capability:missing_values",
-                        raise_error=False,
-                        tag_value_default=False,
-                    )
-                    if isinstance(e[1], BaseAeonEstimator)
-                    else False
+            (
+                e[1].get_tag(
+                    "capability:missing_values",
+                    raise_error=False,
+                    tag_value_default=False,
                 )
-                for e in self._ensemble
-            ]
+                if isinstance(e[1], BaseAeonEstimator)
+                else False
+            )
+            for e in self._ensemble
         )
         remainder_missing = remainder is None or (
             isinstance(remainder, BaseAeonEstimator)
@@ -125,18 +123,16 @@ class BaseCollectionChannelEnsemble(ComposableEstimatorMixin, BaseCollectionEsti
 
         # can handle unequal length if all estimators can
         unequal = all(
-            [
-                (
-                    e[1].get_tag(
-                        "capability:unequal_length",
-                        raise_error=False,
-                        tag_value_default=False,
-                    )
-                    if isinstance(e[1], BaseAeonEstimator)
-                    else False
+            (
+                e[1].get_tag(
+                    "capability:unequal_length",
+                    raise_error=False,
+                    tag_value_default=False,
                 )
-                for e in self._ensemble
-            ]
+                if isinstance(e[1], BaseAeonEstimator)
+                else False
+            )
+            for e in self._ensemble
         )
         remainder_unequal = remainder is None or (
             isinstance(remainder, BaseAeonEstimator)
@@ -226,7 +222,7 @@ class BaseCollectionChannelEnsemble(ComposableEstimatorMixin, BaseCollectionEsti
                 if isinstance(channels, int):
                     channels = [channels]
                 current_channels.extend(all_channels[channels])
-            remaining_idx = sorted(list(set(all_channels) - set(current_channels)))
+            remaining_idx = sorted(set(all_channels) - set(current_channels))
 
             if remaining_idx:
                 self.ensemble_.append(

@@ -74,7 +74,7 @@ def check_transformer_overrides_and_tags(estimator_class):
     if isinstance(X_inner_type, str):
         assert X_inner_type in dtypes
     else:  # must be a list
-        assert all([t in dtypes for t in X_inner_type])
+        assert all(t in dtypes for t in X_inner_type)
 
     # one of X_inner_types must be capable of storing unequal length
     if estimator_class.get_class_tag(
@@ -84,7 +84,7 @@ def check_transformer_overrides_and_tags(estimator_class):
         if isinstance(X_inner_type, str):
             assert X_inner_type in valid_unequal_types
         else:  # must be a list
-            assert any([t in valid_unequal_types for t in X_inner_type])
+            assert any(t in valid_unequal_types for t in X_inner_type)
 
     inherits_inverse = (
         issubclass(estimator_class, SeriesInverseTransformerMixin)

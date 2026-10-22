@@ -249,7 +249,7 @@ class BaseRIST(ABC):
         else:
             dists = np.zeros((X.shape[0], self.n_classes_))
             preds = self.estimator_.predict(self._transform_data(X))
-            for i in range(0, X.shape[0]):
+            for i in range(X.shape[0]):
                 dists[i, self._class_dictionary[preds[i]]] = 1
             return dists
 

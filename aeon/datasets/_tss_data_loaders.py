@@ -95,7 +95,7 @@ def load_time_series_segmentation_benchmark(
 
     # converters to correctly load benchmark
     np_cols = ["change_points", "time_series"]
-    converters = {col: _parse_np_array for col in np_cols}
+    converters = dict.fromkeys(np_cols, _parse_np_array)
 
     # load benchmark from git repo (and save locally) / or load locally
     if not benchmark_path.exists():
@@ -210,7 +210,7 @@ def load_human_activity_segmentation_datasets(
         "lon",
         "speed",
     ]
-    converters = {col: _parse_np_array for col in np_cols}
+    converters = dict.fromkeys(np_cols, _parse_np_array)
 
     # load activity data from git repo (and save locally) / or load locally
     if not benchmark_path.exists():

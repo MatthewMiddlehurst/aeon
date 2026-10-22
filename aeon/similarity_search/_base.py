@@ -69,7 +69,6 @@ class BaseSimilaritySearch(BaseCollectionEstimator):
         their parameters against ``n_timepoints_``. It is called by ``fit`` after
         ``n_timepoints_``/``n_cases_`` are set and before ``_fit``.
         """
-        pass
 
     def _preprocess_series(self, X, axis):
         """

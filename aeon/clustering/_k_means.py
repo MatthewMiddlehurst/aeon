@@ -25,8 +25,6 @@ from aeon.utils.validation import check_n_jobs
 class EmptyClusterError(Exception):
     """Error raised when an empty cluster is encountered."""
 
-    pass
-
 
 class TimeSeriesKMeans(BaseClusterer):
     """Time series K-means clustering implementation.
@@ -225,7 +223,7 @@ class TimeSeriesKMeans(BaseClusterer):
                     best_iters = n_iters
             except EmptyClusterError:
                 if self.verbose:
-                    print("Resumed because of empty cluster")  # noqa: T001, T201
+                    print("Resumed because of empty cluster")  # noqa: T201
 
         if best_labels is None:
             raise ValueError(
@@ -268,7 +266,7 @@ class TimeSeriesKMeans(BaseClusterer):
                 )
 
             if self.verbose:
-                print(f"{curr_inertia:.3f}", end=" --> ")  # noqa: T001, T201
+                print(f"{curr_inertia:.3f}", end=" --> ")  # noqa: T201
 
             change_in_centres = np.abs(prev_inertia - curr_inertia)
             prev_inertia = curr_inertia
@@ -284,7 +282,7 @@ class TimeSeriesKMeans(BaseClusterer):
                 )
 
             if self.verbose:
-                print(f"Iteration {i}, inertia {prev_inertia}.")  # noqa: T001, T201
+                print(f"Iteration {i}, inertia {prev_inertia}.")  # noqa: T201
 
         return prev_labels, cluster_centres, prev_inertia, i + 1
 

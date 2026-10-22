@@ -169,7 +169,7 @@ def test_check_X():
 def test_convert_X_ndarray_inner(input_type):
     """Test _convert_X on with np.ndarray inner type."""
     dummy = MockAnomalyDetector()
-    dummy.set_tags(**{"X_inner_type": "np.ndarray"})
+    dummy.set_tags(X_inner_type="np.ndarray")
     # test univariate
     X = UNIVARIATE[input_type]
 
@@ -203,7 +203,7 @@ def test_convert_X_ndarray_inner(input_type):
 def test_convert_X_dataframe_inner(input_type):
     """Test _convert_X on with pd.DataFrame inner type."""
     dummy = MockAnomalyDetector()
-    dummy.set_tags(**{"X_inner_type": "pd.DataFrame"})
+    dummy.set_tags(X_inner_type="pd.DataFrame")
     # test univariate
     X = UNIVARIATE[input_type]
 
@@ -242,7 +242,7 @@ def test_convert_X_invalid():
     with pytest.raises(ValueError, match="Input axis should be 0 or 1, saw -1"):
         dummy._convert_X(UNIVARIATE["np.ndarray"], axis=-1)
 
-    dummy.set_tags(**{"X_inner_type": ["invalid"]})
+    dummy.set_tags(X_inner_type=["invalid"])
     with pytest.raises(ValueError, match="Unsupported inner type"):
         dummy._convert_X(UNIVARIATE["np.ndarray"], axis=1)
 
@@ -252,7 +252,7 @@ def test_convert_X_invalid():
 def test_preprocess_series(input_type, inner_type):
     """Test _preprocess_series for different input and inner types."""
     dummy = MockAnomalyDetector()
-    dummy.set_tags(**{"X_inner_type": inner_type})
+    dummy.set_tags(X_inner_type=inner_type)
     inner_name = inner_type.split(".")[1]
     # test univariate
     X = UNIVARIATE[input_type]

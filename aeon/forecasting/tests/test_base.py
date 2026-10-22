@@ -101,12 +101,12 @@ def test_convert_y():
     y = np.random.random((100, 2))
     y2 = f._convert_y(y, axis=0)
     assert y2.shape == (2, 100)
-    f.set_tags(**{"y_inner_type": "pd.DataFrame"})
+    f.set_tags(y_inner_type="pd.DataFrame")
     y2 = f._convert_y(y, axis=0)
     assert isinstance(y2, pd.DataFrame)
     y2 = f._convert_y(y, axis=1)
     assert isinstance(y2, pd.DataFrame)
-    f.set_tags(**{"y_inner_type": "pd.Series"})
+    f.set_tags(y_inner_type="pd.Series")
     with pytest.raises(ValueError, match="Unsupported inner type"):
         f._convert_y(y, axis=1)
     with pytest.raises(ValueError, match="must be greater than or equal to 1"):
@@ -129,7 +129,7 @@ def test_direct_forecast():
     # Direct should be the same as setting horizon manually.
     preds = f.direct_forecast(y, prediction_horizon=10)
     assert isinstance(preds, np.ndarray) and len(preds) == 10
-    for i in range(0, 10):
+    for i in range(10):
         f = RegressionForecaster(window=10, horizon=i + 1)
         p = f.forecast(y)
         assert p == preds[i]
@@ -142,7 +142,7 @@ def test_iterative_forecast():
     preds = f.iterative_forecast(y, prediction_horizon=10)
     assert isinstance(preds, np.ndarray) and len(preds) == 10
     f.fit(y)
-    for i in range(0, 10):
+    for i in range(10):
         p = f.predict(y)
         assert p == preds[i]
         y = np.append(y, p)
@@ -332,12 +332,12 @@ def test_series_to_series_forecast():
 def test_convert_y_list_inner_type_and_dataframe():
     """_convert_y handles list y_inner_type tags and DataFrame conversion."""
     f = NaiveForecaster()
-    f.set_tags(**{"y_inner_type": ["np.ndarray"]})
+    f.set_tags(y_inner_type=["np.ndarray"])
     out = f._convert_y(pd.Series(np.arange(5.0)), axis=1)
     assert isinstance(out, np.ndarray)
 
     f2 = NaiveForecaster()
-    f2.set_tags(**{"y_inner_type": "pd.DataFrame"})
+    f2.set_tags(y_inner_type="pd.DataFrame")
     out2 = f2._convert_y(np.arange(5.0), axis=1)
     assert isinstance(out2, pd.DataFrame)
     # 1D input with axis=1 is transposed to a single row

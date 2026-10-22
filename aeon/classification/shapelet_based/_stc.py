@@ -278,7 +278,7 @@ class ShapeletTransformClassifier(BaseClassifier):
         else:
             proba = np.zeros((len(X), self.n_classes_))
             preds = self.estimator_.predict(X_t)
-            for i in range(0, len(X)):
+            for i in range(len(X)):
                 proba[i, np.where(self.classes_ == preds[i])] = 1
 
         if self.verbose > 0:

@@ -256,7 +256,7 @@ class ElasticEnsemble(BaseClassifier):
                 f"Using{(100 * self.proportion_of_param_options)} parameter options"
             )
 
-        for dm in range(0, len(self._distance_measures)):
+        for dm in range(len(self._distance_measures)):
             this_measure = self._distance_measures[dm]
 
             # uses the appropriate training data as required (either full or
@@ -389,7 +389,7 @@ class ElasticEnsemble(BaseClassifier):
         output_probas = []
         train_sum = 0
 
-        for c in range(0, len(self.estimators_)):
+        for c in range(len(self.estimators_)):
             if self._distance_measures[c] in ("ddtw", "wddtw", "ddtw_full"):
                 test_X_to_use = der_X
             else:
@@ -455,11 +455,11 @@ class ElasticEnsemble(BaseClassifier):
             return np.arange(min_val, max_val + inc / 2, inc)
 
         if distance_measure == "dtw" or distance_measure == "ddtw":
-            return {"distance_params": [{"window": x / 100} for x in range(0, 100)]}
+            return {"distance_params": [{"window": x / 100} for x in range(100)]}
         elif distance_measure in ("dtw_full", "ddtw_full"):
             return {"distance_params": [{"window": 1.0}]}
         elif distance_measure == "wdtw" or distance_measure == "wddtw":
-            return {"distance_params": [{"g": x / 100} for x in range(0, 100)]}
+            return {"distance_params": [{"g": x / 100} for x in range(100)]}
         elif distance_measure == "lcss":
             if train_x is None:
                 raise ValueError(f"Error need train data for {distance_measure}")
@@ -472,7 +472,7 @@ class ElasticEnsemble(BaseClassifier):
             a = list(product(epsilons, deltas))
             return {
                 "distance_params": [
-                    {"epsilon": a[x][0], "window": a[x][1]} for x in range(0, len(a))
+                    {"epsilon": a[x][0], "window": a[x][1]} for x in range(len(a))
                 ]
             }
         elif distance_measure == "erp":
@@ -488,7 +488,7 @@ class ElasticEnsemble(BaseClassifier):
             return {
                 "distance_params": [
                     {"window": b_and_g[x][0], "g": b_and_g[x][1]}
-                    for x in range(0, len(b_and_g))
+                    for x in range(len(b_and_g))
                 ]
             }
         elif distance_measure == "msm":
@@ -515,7 +515,7 @@ class ElasticEnsemble(BaseClassifier):
                         "nu": b_and_nu_and_lmbda[x][1],
                         "lmbda": b_and_nu_and_lmbda[x][2],
                     }
-                    for x in range(0, len(b_and_nu_and_lmbda))
+                    for x in range(len(b_and_nu_and_lmbda))
                 ]
             }
 

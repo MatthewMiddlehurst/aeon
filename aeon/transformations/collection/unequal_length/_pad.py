@@ -89,10 +89,8 @@ class Padder(BaseCollectionTransformer):
         super().__init__()
 
         self.set_tags(
-            **{
-                "fit_is_empty": _is_positive_integer_length(padded_length),
-                "removes_unequal_length": error_on_long,
-            }
+            fit_is_empty=_is_positive_integer_length(padded_length),
+            removes_unequal_length=error_on_long,
         )
 
     def _fit(self, X, y=None):

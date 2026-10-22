@@ -774,7 +774,7 @@ def _dotm_fitted_values(y, initial_level, alpha, theta):
     fitted[0] = y[0]
     residuals[0] = y[0] - fitted[0]
 
-    for i in range(0, n - 1):
+    for i in range(n - 1):
         power = (1.0 - alpha) ** (i + 1)
         if alpha <= 0.0:
             slope_term = 0.0
@@ -802,7 +802,7 @@ def _dotm_forecast(y, h, initial_level, alpha, theta):
     a = y[0]
     b = 0.0
 
-    for i in range(0, n + h - 1):
+    for i in range(n + h - 1):
         power = (1.0 - alpha) ** (i + 1)
         slope_term = b * (1.0 - (1.0 - alpha) ** (i + 2)) / alpha
         mu = ell + omega * (a * power + slope_term)
@@ -859,7 +859,7 @@ def _dotm_sse_values(initial_level, alpha, theta, y):
     a = y[0]
     b = 0.0
     sse = 0.0
-    for i in range(0, y.shape[0] - 1):
+    for i in range(y.shape[0] - 1):
         power = (1.0 - alpha) ** (i + 1)
         slope_term = b * (1.0 - (1.0 - alpha) ** (i + 2)) / alpha
         fitted = ell + omega * (a * power + slope_term)

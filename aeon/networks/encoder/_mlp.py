@@ -143,7 +143,7 @@ class MLPNetwork(BaseDeepLearningNetwork):
 
         x = input_layer_flattened
 
-        for idx in range(0, self.n_layers):
+        for idx in range(self.n_layers):
             x = keras.layers.Dropout(self._dropout_rate[idx])(x)
             x = keras.layers.Dense(
                 self._n_units[idx],

@@ -207,7 +207,7 @@ def _load_data(file, meta_data, replace_missing_vals_with="NaN"):
         else:
             current_length = len(channels[0].split(","))
         np_case = np.zeros(shape=(n_channels, current_length))
-        for i in range(0, n_channels):
+        for i in range(n_channels):
             single_channel = channels[i].strip()
             data_series = single_channel.split(",")
             data_series = [float(x) for x in data_series]

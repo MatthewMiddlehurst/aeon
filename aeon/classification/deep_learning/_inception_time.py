@@ -270,7 +270,7 @@ class InceptionTimeClassifier(BaseClassifier):
         self.classifiers_ = []
         rng = check_random_state(self.random_state)
 
-        for n in range(0, self.n_classifiers):
+        for n in range(self.n_classifiers):
             cls = IndividualInceptionClassifier(
                 n_filters=self.n_filters,
                 n_conv_per_layer=self.n_conv_per_layer,

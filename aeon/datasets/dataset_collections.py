@@ -77,12 +77,12 @@ def get_available_tser_datasets(name="tser_soton", return_list=True):
     """
     if name == "tser_soton":  # List them all
         if return_list:
-            return sorted(list(set(tser_soton).union(set(tser_monash))))
+            return sorted(set(tser_soton).union(set(tser_monash)))
         else:
             return set(tser_soton)
     if name == "tser_monash":
         if return_list:
-            return sorted(list(tser_monash))
+            return sorted(tser_monash)
         else:
             return tser_monash
     return name in tser_soton
@@ -91,7 +91,7 @@ def get_available_tser_datasets(name="tser_soton", return_list=True):
 def get_available_tsf_datasets(name=None):
     """List available tsf data."""
     if name is None:  # List them all
-        return sorted(list(tsf_all))
+        return sorted(tsf_all)
     return name in tsf_all
 
 
@@ -112,7 +112,7 @@ def get_available_tsc_datasets(name=None):
     """
     if name is None:  # List them all
         merged_set = set(univariate).union(set(multivariate))
-        return sorted(list(merged_set))
+        return sorted(merged_set)
     return name in univariate or name in multivariate
 
 

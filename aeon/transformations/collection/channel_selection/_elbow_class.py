@@ -69,9 +69,9 @@ def _create_distance_matrix(
             class values {len(class_vals)} must be of same length."
         )
 
-    distance_pair = list(itertools.combinations(range(0, class_vals.shape[0]), 2))
+    distance_pair = list(itertools.combinations(range(class_vals.shape[0]), 2))
     # create a dictionary of class values and their indices
-    idx_class = {i: class_vals[i] for i in range(0, len(class_vals))}
+    idx_class = {i: class_vals[i] for i in range(len(class_vals))}
 
     distance_frame = pd.DataFrame()
     for cls_ in distance_pair:

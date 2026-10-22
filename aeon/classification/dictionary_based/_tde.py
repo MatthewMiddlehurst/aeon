@@ -606,7 +606,7 @@ class TemporalDictionaryEnsemble(BaseClassifier):
             all_preds = [clf._predict(X) for clf in self.estimators_]
 
         for n, preds in enumerate(all_preds):
-            for i in range(0, X.shape[0]):
+            for i in range(X.shape[0]):
                 sums[i, self._class_dictionary[preds[i]]] += self.weights_[n]
 
         return sums / (np.ones(self.n_classes_) * self._weight_sum)

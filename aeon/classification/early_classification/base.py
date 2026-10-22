@@ -483,7 +483,7 @@ class BaseEarlyClassifier(ClassifierMixin, BaseCollectionEstimator):
         """
         dists = np.zeros((X.shape[0], self.n_classes_))
         preds, decisions = self._predict(X)
-        for i in range(0, X.shape[0]):
+        for i in range(X.shape[0]):
             if decisions[i]:
                 dists[i, self._class_dictionary[preds[i]]] = 1
             else:
@@ -529,7 +529,7 @@ class BaseEarlyClassifier(ClassifierMixin, BaseCollectionEstimator):
         """
         dists = np.zeros((X.shape[0], self.n_classes_))
         preds, decisions = self._update_predict(X)
-        for i in range(0, X.shape[0]):
+        for i in range(X.shape[0]):
             if decisions[i]:
                 dists[i, self._class_dictionary[preds[i]]] = 1
             else:

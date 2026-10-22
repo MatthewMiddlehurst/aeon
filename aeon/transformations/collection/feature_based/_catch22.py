@@ -226,7 +226,7 @@ class Catch22(BaseCollectionTransformer):
         if use_pycatch22 != "deprecated":
             _warn_use_pycatch22_deprecated(self)
         if use_pycatch22 is True:
-            self.set_tags(**{"python_dependencies": "pycatch22"})
+            self.set_tags(python_dependencies="pycatch22")
 
     def _transform(self, X, y=None):
         """Transform X into the catch22 features.
@@ -1120,7 +1120,7 @@ class _InternalCatch22(Catch22):
         )
         self.use_pycatch22 = use_pycatch22
         if use_pycatch22 is True:
-            self.set_tags(**{"python_dependencies": "pycatch22"})
+            self.set_tags(python_dependencies="pycatch22")
 
 
 @njit(fastmath=True, cache=True)
@@ -1322,7 +1322,7 @@ def _summaries_welch_rect(X, centroid, X_fft):
 
     w = np.zeros(new_length)
     a = 1.0 / len(X_fft)
-    for i in range(0, new_length):
+    for i in range(new_length):
         w[i] = i * a * math.pi * 2
 
     if centroid:

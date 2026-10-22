@@ -56,7 +56,7 @@ def plot_temporal_importance_curves(
 
     # plot curves with highest max and the mean information gain for each time point if
     # enabled.
-    for i in range(0, top_curves_shown):
+    for i in range(top_curves_shown):
         ax.plot(
             top_curves[i],
             label=top_names[i],

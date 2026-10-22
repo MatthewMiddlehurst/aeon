@@ -55,7 +55,7 @@ class Resizer(BaseCollectionTransformer):
 
         super().__init__()
 
-        self.set_tags(**{"fit_is_empty": _is_positive_integer_length(resized_length)})
+        self.set_tags(fit_is_empty=_is_positive_integer_length(resized_length))
 
     def _fit(self, X, y=None):
         """Fit resizing transformer to X and y.

@@ -252,7 +252,7 @@ class DirectForecastingMixin:
             )
 
         preds = np.zeros(prediction_horizon)
-        for i in range(0, prediction_horizon):
+        for i in range(prediction_horizon):
             f = _clone_estimator(self)
             f.horizon = i + 1
             preds[i] = f.forecast(y, exog)

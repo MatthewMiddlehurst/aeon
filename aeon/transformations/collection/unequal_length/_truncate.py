@@ -63,10 +63,8 @@ class Truncator(BaseCollectionTransformer):
         super().__init__()
 
         self.set_tags(
-            **{
-                "fit_is_empty": _is_positive_integer_length(truncated_length),
-                "removes_unequal_length": error_on_short,
-            }
+            fit_is_empty=_is_positive_integer_length(truncated_length),
+            removes_unequal_length=error_on_short,
         )
 
     def _fit(self, X, y=None):

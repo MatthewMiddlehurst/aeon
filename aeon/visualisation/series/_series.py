@@ -186,7 +186,7 @@ def _check_colors(colors, n_series):
     """Verify color list is correct length and contains only colors."""
     from matplotlib.colors import is_color_like
 
-    if n_series == len(colors) and all([is_color_like(c) for c in colors]):
+    if n_series == len(colors) and all(is_color_like(c) for c in colors):
         return True
     warn(
         "Color list must be same length as `series` and contain only matplotlib colors"

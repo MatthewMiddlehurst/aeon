@@ -273,7 +273,7 @@ class RandomDilatedShapeletTransform(BaseCollectionTransformer):
         X_new : 2D np.array of shape = (n_cases, 3*n_shapelets)
             The transformed data.
         """
-        for i in range(0, len(X)):
+        for i in range(len(X)):
             if X[i].shape[1] < self.max_shapelet_length_:
                 raise ValueError(
                     "The shortest series in transform is smaller than "

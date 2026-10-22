@@ -264,7 +264,7 @@ class RDSTClassifier(BaseClassifier):
         else:
             dists = np.zeros((len(X), self.n_classes_))
             preds = self.estimator_.predict(X_t)
-            for i in range(0, len(X)):
+            for i in range(len(X)):
                 dists[i, np.where(self.classes_ == preds[i])] = 1
             return dists
 

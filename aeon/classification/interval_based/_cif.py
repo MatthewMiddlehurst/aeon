@@ -225,7 +225,7 @@ class CanonicalIntervalForestClassifier(BaseIntervalForest, BaseClassifier):
         )
 
         if use_pycatch22 is True:
-            self.set_tags(**{"python_dependencies": "pycatch22"})
+            self.set_tags(python_dependencies="pycatch22")
 
     def _fit(self, X, y):
         return super()._fit(X, y)

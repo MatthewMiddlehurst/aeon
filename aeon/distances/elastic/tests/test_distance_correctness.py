@@ -91,7 +91,7 @@ def test_multivariate_correctness():
     assert_almost_equal(d, basic_motions_distances["euclidean"], 4)
     d = squared_distance(case1, case2)
     assert_almost_equal(d, basic_motions_distances["squared"], 4)
-    for j in range(0, 3):
+    for j in range(3):
         d = dtw_distance(case1, case2, window=distance_parameters["dtw"][j])
         assert_almost_equal(d, basic_motions_distances["dtw"][j], 4)
         d = dtw_gi_distance(case1, case2, window=distance_parameters["dtw_gi"][j])
@@ -134,7 +134,7 @@ def test_univariate_correctness():
     d2 = squared_distance(cases1[1], cases2[1])
     assert_almost_equal(d, unit_test_distances["squared"], 4)
     assert d == d2
-    for j in range(0, 3):
+    for j in range(3):
         d = dtw_distance(cases1[0], cases2[0], window=distance_parameters["dtw"][j])
         d2 = dtw_distance(cases1[1], cases2[1], window=distance_parameters["dtw"][j])
         assert_almost_equal(d, unit_test_distances["dtw"][j], 4)

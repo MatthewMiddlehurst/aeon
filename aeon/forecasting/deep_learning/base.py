@@ -196,7 +196,6 @@ class BaseDeepForecaster(BaseForecaster):
         model : tf.keras.Model
             Compiled Keras model.
         """
-        pass
 
     @classmethod
     def _get_test_params(

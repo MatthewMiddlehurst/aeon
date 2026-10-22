@@ -32,7 +32,7 @@ def test_plot_cluster_algorithm():
     assert (
         isinstance(fig, plt.Figure)
         and isinstance(ax, np.ndarray)
-        and all([isinstance(ax_, plt.Axes) for ax_ in ax])
+        and all(isinstance(ax_, plt.Axes) for ax_ in ax)
     )
 
     plt.close()

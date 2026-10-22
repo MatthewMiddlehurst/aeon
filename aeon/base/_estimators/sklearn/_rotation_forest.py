@@ -697,14 +697,14 @@ class BaseRotationForest(BaseEstimator):
         groups = []
         current_attribute = 0
         current_size = 0
-        for i in range(0, n_groups):
+        for i in range(n_groups):
             while group_size_count[current_size] == 0:
                 current_size += 1
             group_size_count[current_size] -= 1
 
             n = self.min_group + current_size
             groups.append(np.zeros(n, dtype=int))
-            for k in range(0, n):
+            for k in range(n):
                 if current_attribute < permutation.shape[0]:
                     groups[i][k] = permutation[current_attribute]
                 else:

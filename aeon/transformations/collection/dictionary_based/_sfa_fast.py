@@ -1255,7 +1255,7 @@ def _dilation2(X, d):
     if d > 1:
         start = 0
         data = np.zeros(X.shape, dtype=np.float64)
-        for i in range(0, d):
+        for i in range(d):
             curr = X[:, i::d]
             end = curr.shape[1]
             data[:, start : start + end] = curr

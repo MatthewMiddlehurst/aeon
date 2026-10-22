@@ -158,19 +158,19 @@ def assign_prs(
             assign_pr_category(assigned, categories, i, pr_labels, "Other")
 
     # order assignments
-    assigned = OrderedDict({k: v for k, v in sorted(assigned.items())})
+    assigned = OrderedDict(dict(sorted(assigned.items())))
     if "Other" in assigned:
         assigned.move_to_end("Other")
 
     for key in assigned:
-        assigned[key] = OrderedDict({k: v for k, v in sorted(assigned[key].items())})
+        assigned[key] = OrderedDict(dict(sorted(assigned[key].items())))
         if "Other" in assigned[key]:
             assigned[key].move_to_end("Other")
 
     return assigned, prs_removed
 
 
-def render_row(pr: dict):  # noqa
+def render_row(pr: dict):
     """Render a single row with PR in Myst Markdown format."""
     print(  # noqa: T201
         "-",
