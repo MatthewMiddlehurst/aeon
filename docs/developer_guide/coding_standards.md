@@ -22,7 +22,8 @@ We adhere to the code formatting standards using the following `pre-commit` hook
 which follows the [black](https://black.readthedocs.io/en/stable/) code style, for
 Python files, Jupyter notebooks and Python code blocks in Markdown files
 - [ruff](https://docs.astral.sh/ruff/) for linting Python files and Jupyter notebooks,
-using the pycodestyle, Pyflakes, flake8-bugbear and flake8-print rules. It also sorts
+using the pycodestyle, Pyflakes, flake8-bugbear, flake8-print, flake8-comprehensions
+and flake8-pie rules. It also sorts
 imports (isort rules), upgrades syntax to the minimum supported Python version
 (pyupgrade rules) and enforces the [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html#docstring-standard>)
 documentation style using its [pydocstyle](https://docs.astral.sh/ruff/rules/#pydocstyle-d)
@@ -83,5 +84,6 @@ push the changes it makes.
 
 If you want to exclude some line of code from being checked, you can add a `# noqa`
 (no quality assurance) comment at the end of that line. This should only be used
-sparingly and with good reason. It is best to limit this to specific checks, i.e.
-`# noqa: T201` for `print` statements.
+sparingly and with good reason. The comment must name the specific checks, i.e.
+`# noqa: T201` for `print` statements. A bare `# noqa`, or one that does not suppress
+anything, fails the `ruff` check.
