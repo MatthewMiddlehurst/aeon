@@ -50,6 +50,24 @@ def test_catch22_short_on_basic_motions():
     )
 
 
+@pytest.mark.parametrize(
+    "short_name, full_name",
+    [
+        ("low_freq_power", "SP_Summaries_welch_rect_area_5_1"),
+        ("centroid_freq", "SP_Summaries_welch_rect_centroid"),
+    ],
+)
+def test_catch22_short_name_selects_matching_feature(short_name, full_name):
+    """Test that a short name selects the same feature as its full catch22 name."""
+    X = make_example_3d_numpy(
+        n_cases=4, n_channels=1, n_timepoints=50, random_state=0, return_y=False
+    )
+    testing.assert_array_equal(
+        Catch22(features=short_name).fit_transform(X),
+        Catch22(features=full_name).fit_transform(X),
+    )
+
+
 @pytest.mark.parametrize("use_pycatch22", [True, False])
 def test_use_pycatch22_deprecation_warning(use_pycatch22):
     """Test that every explicit use of the deprecated parameter warns."""
@@ -115,12 +133,12 @@ feature_names_short = [
     "whiten_timescale",
     "outlier_timing_pos",
     "outlier_timing_neg",
-    "centroid_freq",
+    "low_freq_power",
     "stretch_decreasing",
     "entropy_pairs",
     "rs_range",
     "dfa",
-    "low_freq_power",
+    "centroid_freq",
     "forecast_error",
 ]
 
