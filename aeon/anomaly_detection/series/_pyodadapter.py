@@ -142,7 +142,7 @@ class PyODAdapter(BaseSeriesAnomalyDetector):
             )
 
     def _inner_fit(self, X: np.ndarray) -> None:
-        self.fitted_pyod_model_: BaseDetector = clone(self.pyod_model)  # type: ignore
+        self.fitted_pyod_model_: BaseDetector = clone(self.pyod_model)
         self.fitted_pyod_model_.fit(X)
 
     def _inner_predict(self, X: np.ndarray, padding: int) -> np.ndarray:
