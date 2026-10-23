@@ -304,13 +304,13 @@ class TimeSeriesKMedoids(BaseClusterer):
 
             if np.all(old_medoid_idxs == medoids_idxs):
                 if self.verbose:
-                    print(  # noqa: T001, T201
+                    print(  # noqa: T201
                         f"Converged at iteration {i}: strict convergence."
                     )
                 break
             if np.abs(old_inertia - inertia) < self.tol:
                 if self.verbose:
-                    print(  # noqa: T001, T201
+                    print(  # noqa: T201
                         f"Converged at iteration {i}: inertia less than tol."
                     )
                 break
@@ -324,7 +324,7 @@ class TimeSeriesKMedoids(BaseClusterer):
                     stacklevel=1,
                 )
             if self.verbose is True:
-                print(f"Iteration {i}, inertia {inertia}.")  # noqa: T001, T201
+                print(f"Iteration {i}, inertia {inertia}.")  # noqa: T201
 
         labels, inertia = self._assign_clusters(X, medoids_idxs)
         centers = X[medoids_idxs]
@@ -405,7 +405,7 @@ class TimeSeriesKMedoids(BaseClusterer):
 
             if np.array_equal(indexes, old_indexes):
                 if self.verbose:
-                    print(  # noqa: T001, T201
+                    print(  # noqa: T201
                         f"Converged at iteration {i}: strict convergence."
                     )
                 break
@@ -414,7 +414,7 @@ class TimeSeriesKMedoids(BaseClusterer):
             cluster_center_indexes = self._compute_new_cluster_centers(X, indexes)
 
             if self.verbose is True:
-                print(f"Iteration {i}, inertia {inertia}.")  # noqa: T001, T201
+                print(f"Iteration {i}, inertia {inertia}.")  # noqa: T201
 
         labels, inertia = self._assign_clusters(X, cluster_center_indexes)
         centers = X[cluster_center_indexes]
