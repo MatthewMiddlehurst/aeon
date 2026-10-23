@@ -29,6 +29,9 @@ documentation style using its [pydocstyle](https://docs.astral.sh/ruff/rules/#py
 rules
 - [codespell](https://github.com/codespell-project/codespell) to check for common
 spelling mistakes
+- A local check for implicitly concatenated strings missing a space at the join, i.e.
+`"one of the" "following"`. Add `# allow-string-join` to the line of the first string
+if the join is intended
 - Some standard [pre-commit hooks](https://pre-commit.com/hooks.html) for general code
 quality
 
