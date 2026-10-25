@@ -12,7 +12,7 @@ import numpy as np
 import pytest
 from sklearn.calibration import CalibratedClassifierCV
 from sklearn.ensemble import VotingClassifier
-from sklearn.experimental import enable_halving_search_cv  # noqa
+from sklearn.experimental import enable_halving_search_cv  # noqa: F401
 from sklearn.model_selection import (
     GridSearchCV,
     GroupKFold,

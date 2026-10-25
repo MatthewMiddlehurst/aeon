@@ -83,5 +83,6 @@ push the changes it makes.
 
 If you want to exclude some line of code from being checked, you can add a `# noqa`
 (no quality assurance) comment at the end of that line. This should only be used
-sparingly and with good reason. It is best to limit this to specific checks, i.e.
-`# noqa: T201` for `print` statements.
+sparingly and with good reason. The comment must name the specific checks, i.e.
+`# noqa: T201` for `print` statements. A bare `# noqa`, or one that does not suppress
+anything, fails the `ruff` check.
