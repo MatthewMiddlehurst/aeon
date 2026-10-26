@@ -1,5 +1,7 @@
 """Test functions for RehabPile dataset loaders."""
 
+import os
+import pickle
 import tempfile
 from pathlib import Path
 
@@ -158,3 +160,75 @@ def test_load_rehab_pile_dataset_wrong_name_and_split(mocker):
         ValueError, match="Split must be 'train' or 'test', but found 'validation'."
     ):
         load_rehab_pile_dataset(name="A_valid_clf_dataset", split="validation")
+
+
+class _MakeDirOnUnpickle:
+    """Object which creates a directory when unpickled."""
+
+    def __init__(self, path):
+        self.path = path
+
+    def __reduce__(self):
+        return os.mkdir, (self.path,)
+
+
+def _write_object_npy(path, arr, legacy_module=False):
+    """Write an object array .npy, optionally with numpy 1.x module names."""
+    data = pickle.dumps(arr, protocol=3)
+    if legacy_module:
+        # RehabPile files were written with numpy 1.x
+        data = data.replace(b"numpy._core.multiarray", b"numpy.core.multiarray")
+    with open(path, "wb") as f:
+        np.lib.format.write_array_header_1_0(
+            f, {"descr": "|O", "fortran_order": False, "shape": arr.shape}
+        )
+        f.write(data)
+
+
+def _mock_rehabpile_dataset(mocker, tmp):
+    mocker.patch(
+        "aeon.datasets.rehabpile_loader.load_rehab_pile_classification_datasets",
+        return_value=["A_clf_B"],
+    )
+    mocker.patch(
+        "aeon.datasets.rehabpile_loader.load_rehab_pile_regression_datasets",
+        return_value=[],
+    )
+    mocker.patch(
+        "aeon.datasets.rehabpile_loader.REHABPILE_FOLDS",
+        {"classification": {"A_clf_B": 1}},
+    )
+    fold_path = Path(tmp) / "classification" / "A_clf_B" / "0"
+    fold_path.mkdir(parents=True)
+    return fold_path
+
+
+@pytest.mark.parametrize("legacy_module", [True, False])
+def test_load_rehab_pile_dataset_object_labels(mocker, legacy_module):
+    """Test loading RehabPile object array labels without allow_pickle."""
+    X = np.random.default_rng(0).random((4, 3, 5))
+    y = np.array([0, 1, 1, 0], dtype=object)
+    with tempfile.TemporaryDirectory() as tmp:
+        fold_path = _mock_rehabpile_dataset(mocker, tmp)
+        np.save(fold_path / "x_train_fold0.npy", X)
+        _write_object_npy(fold_path / "y_train_fold0.npy", y, legacy_module)
+
+        X_load, y_load = load_rehab_pile_dataset("A_clf_B", extract_path=tmp)
+
+    np.testing.assert_array_equal(X_load, X)
+    np.testing.assert_array_equal(y_load, y.astype(int))
+    assert np.issubdtype(y_load.dtype, np.integer)
+
+
+def test_load_rehab_pile_dataset_rejects_pickled_code(mocker):
+    """Test that a tampered RehabPile file cannot run code when loaded."""
+    with tempfile.TemporaryDirectory() as tmp:
+        fold_path = _mock_rehabpile_dataset(mocker, tmp)
+        marker = Path(tmp) / "marker"
+        np.save(fold_path / "x_train_fold0.npy", np.zeros((2, 1, 3)))
+        y = np.array([0, _MakeDirOnUnpickle(str(marker))], dtype=object)
+        _write_object_npy(fold_path / "y_train_fold0.npy", y)
+
+        with pytest.raises(pickle.UnpicklingError, match="Refusing to load"):
+            load_rehab_pile_dataset("A_clf_B", extract_path=tmp)
+        assert not marker.exists()
