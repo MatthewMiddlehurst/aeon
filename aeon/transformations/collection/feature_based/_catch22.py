@@ -138,6 +138,14 @@ class Catch22(BaseCollectionTransformer):
     https://github.com/uea-machine-learning/tsml/blob/master/src/main/java
     /tsml/transformers/Catch22.java
 
+    From aeon v1.7.0, four features follow catch22 v0.6.0, which corrected them to
+    match hctsa. "PD_PeriodicityWang_th0_01" and
+    "IN_AutoMutualInfoStats_40_gaussian_fmmi" return the lag rather than the lag
+    minus one. "SB_BinaryStats_mean_longstretch1" and
+    "SB_BinaryStats_diff_longstretch0" return exact run lengths, with zero
+    differences counted as non-increasing for the latter. Values of these features
+    differ from earlier versions.
+
     References
     ----------
     .. [1] Lubba, C. H., Sethi, S. S., Knaute, P., Schultz, S. R., Fulcher, B. D., &
@@ -158,10 +166,10 @@ class Catch22(BaseCollectionTransformer):
     Catch22(...)
     >>> print(tnf.transform(X)[0])
     [1.15639531e+00 1.31700577e+00 5.66227710e-01 2.00000000e+00
-     3.89048349e-01 2.33853577e-01 1.00000000e+00 3.00000000e+00
-     8.23045267e-03 0.00000000e+00 1.70859420e-01 2.00000000e+00
+     3.89048349e-01 2.33853577e-01 1.00000000e+00 2.00000000e+00
+     8.23045267e-03 0.00000000e+00 1.70859420e-01 3.00000000e+00
      1.00000000e+00 7.00000000e-01 2.00000000e-01 1.10933565e-32
-     4.00000000e+00 2.04319187e+00 0.00000000e+00 0.00000000e+00
+     3.00000000e+00 2.04319187e+00 0.00000000e+00 0.00000000e+00
      1.96349541e+00 5.51667002e-01]
     """
 
@@ -574,10 +582,10 @@ class Catch22(BaseCollectionTransformer):
     @staticmethod
     @njit(fastmath=True, cache=True)
     def _SB_BinaryStats_diff_longstretch0(X):
-        # Longest period of successive incremental decreases.
+        # Longest period of successive non-increasing steps.
         diff_binary = np.zeros(len(X) - 1)
         for i in range(len(X) - 1):
-            if X[i + 1] - X[i] >= 0:
+            if X[i + 1] - X[i] > 0:
                 diff_binary[i] = 1
 
         return _long_stretch(diff_binary, 0)
@@ -706,9 +714,10 @@ class Catch22(BaseCollectionTransformer):
             ac = nom / np.sqrt(denomX * denomY)
             ami[i] = -0.5 * np.log(1 - np.power(ac, 2))
 
+        # ami[i] holds lag i + 1
         for i in range(1, tau - 1):
             if ami[i] < ami[i - 1] and ami[i] < ami[i + 1]:
-                return i
+                return i + 1
         return tau
 
     @staticmethod
@@ -730,7 +739,7 @@ class Catch22(BaseCollectionTransformer):
     @njit(fastmath=True, cache=True)
     def _SB_BinaryStats_mean_longstretch1(X, smean):
         # Longest period of consecutive values above the mean.
-        mean_binary = np.zeros(len(X) - 1)
+        mean_binary = np.zeros(len(X))
         for i in range(len(mean_binary)):
             if X[i] - smean > 0:
                 mean_binary[i] = 1
@@ -977,7 +986,8 @@ class Catch22(BaseCollectionTransformer):
             if j == -1 or acf[peaks[i]] - acf[troughs[j]] < 0.01 or acf[peaks[i]] < 0:
                 continue
 
-            out = peaks[i]
+            # acf[peaks[i]] holds lag peaks[i] + 1
+            out = peaks[i] + 1
             break
 
         return out
@@ -1021,15 +1031,16 @@ def _histogram_mode(X, num_bins, smin, smax):
 
 @njit(fastmath=True, cache=True)
 def _long_stretch(X_binary, val):
-    # look for the longest consecutive given value in an array
-    last_val = 0
+    # length of the longest run of consecutive entries equal to val
     max_stretch = 0
+    stretch = 0
     for i in range(len(X_binary)):
-        if X_binary[i] != val or i == len(X_binary) - 1:
-            stretch = i - last_val
+        if X_binary[i] == val:
+            stretch += 1
             if stretch > max_stretch:
                 max_stretch = stretch
-            last_val = i
+        else:
+            stretch = 0
 
     return max_stretch
 
