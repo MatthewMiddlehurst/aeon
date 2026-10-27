@@ -16,7 +16,7 @@ class BaseDeepLearningNetwork(ABC):
 
     _config = {
         "python_dependencies": "tensorflow",
-        "python_version": "<3.14",
+        "python_version": ">=3.11",
     }
 
     @abstractmethod
