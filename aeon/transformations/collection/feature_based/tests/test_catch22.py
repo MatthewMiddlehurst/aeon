@@ -47,13 +47,42 @@ def test_catch22_short_on_basic_motions():
     )
 
 
-@pytest.mark.parametrize(
-    "short_name, full_name",
-    [
-        ("low_freq_power", "SP_Summaries_welch_rect_area_5_1"),
-        ("centroid_freq", "SP_Summaries_welch_rect_centroid"),
-    ],
-)
+# Short and full names as paired in catch22's featureList.txt, written out here
+# rather than taken from the module so that a mismatch in its lists is caught.
+# catch22 has since renamed transition_matrix to transition_variance.
+CATCH22_NAME_PAIRS = [
+    ("mode_5", "DN_HistogramMode_5"),
+    ("mode_10", "DN_HistogramMode_10"),
+    ("acf_timescale", "CO_f1ecac"),
+    ("acf_first_min", "CO_FirstMin_ac"),
+    ("ami2", "CO_HistogramAMI_even_2_5"),
+    ("trev", "CO_trev_1_num"),
+    ("high_fluctuation", "MD_hrv_classic_pnn40"),
+    ("stretch_high", "SB_BinaryStats_mean_longstretch1"),
+    ("transition_matrix", "SB_TransitionMatrix_3ac_sumdiagcov"),
+    ("periodicity", "PD_PeriodicityWang_th0_01"),
+    ("embedding_dist", "CO_Embed2_Dist_tau_d_expfit_meandiff"),
+    ("ami_timescale", "IN_AutoMutualInfoStats_40_gaussian_fmmi"),
+    ("whiten_timescale", "FC_LocalSimple_mean1_tauresrat"),
+    ("outlier_timing_pos", "DN_OutlierInclude_p_001_mdrmd"),
+    ("outlier_timing_neg", "DN_OutlierInclude_n_001_mdrmd"),
+    ("low_freq_power", "SP_Summaries_welch_rect_area_5_1"),
+    ("stretch_decreasing", "SB_BinaryStats_diff_longstretch0"),
+    ("entropy_pairs", "SB_MotifThree_quantile_hh"),
+    ("rs_range", "SC_FluctAnal_2_rsrangefit_50_1_logi_prop_r1"),
+    ("dfa", "SC_FluctAnal_2_dfa_50_1_2_logi_prop_r1"),
+    ("centroid_freq", "SP_Summaries_welch_rect_centroid"),
+    ("forecast_error", "FC_LocalSimple_mean3_stderr"),
+]
+
+
+def test_catch22_name_pairs_cover_all_features():
+    """Test that the name pairs cover every Catch22 feature."""
+    assert len({short for short, _ in CATCH22_NAME_PAIRS}) == 22
+    assert len({full for _, full in CATCH22_NAME_PAIRS}) == 22
+
+
+@pytest.mark.parametrize("short_name, full_name", CATCH22_NAME_PAIRS)
 def test_catch22_short_name_selects_matching_feature(short_name, full_name):
     """Test that a short name selects the same feature as its full catch22 name."""
     X = make_example_3d_numpy(
