@@ -58,12 +58,12 @@ feature_names_short = [
     "whiten_timescale",
     "outlier_timing_pos",
     "outlier_timing_neg",
-    "centroid_freq",
+    "low_freq_power",
     "stretch_decreasing",
     "entropy_pairs",
     "rs_range",
     "dfa",
-    "low_freq_power",
+    "centroid_freq",
     "forecast_error",
 ]
 
@@ -99,10 +99,10 @@ class Catch22(BaseCollectionTransformer):
             "periodicity", "embedding_dist",
             "ami_timescale", "whiten_timescale",
             "outlier_timing_pos", "outlier_timing_neg",
-            "centroid_freq", "stretch_decreasing",
+            "low_freq_power", "stretch_decreasing",
             "entropy_pairs", "rs_range",
             "dfa",
-            "low_freq_power", "forecast_error"]
+            "centroid_freq", "forecast_error"]
 
     catch24 : bool, default=False
         Extract the mean and standard deviation as well as the 22 Catch22 features if
