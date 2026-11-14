@@ -81,7 +81,7 @@ if os.environ.get("CACHING_CICD_RUNNING") == "1":  # pragma: no cover
         if version != self._version:
             return {}
         stamp, overloads = pickle.loads(data)
-        cache_filename = self._index_path.split("/")[-1].split("-")[0].split(".")[0]
+        cache_filename = os.path.basename(self._index_path).split("-")[0].split(".")[0]
         if stamp[1] != self._source_stamp[1] or cache_filename in CHANGED_FILES:
             return {}
         else:
