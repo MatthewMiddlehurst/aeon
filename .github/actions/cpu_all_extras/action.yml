@@ -15,12 +15,12 @@ runs:
   using: "composite"
   steps:
     - name: Install CPU TensorFlow
-      if: ${{ runner.os == 'Linux' && inputs.python_version != '3.14' }}
+      if: runner.os == 'Linux'
       uses: nick-fields/retry@v3
       with:
         timeout_minutes: 30
         max_attempts: 3
-        command: python -m pip install tensorflow-cpu
+        command: python -m pip install "tensorflow-cpu${{ inputs.python_version == '3.14' && '>=2.22.0rc0' || '' }}"
 
     - name: Install CPU PyTorch
       if: runner.os == 'Linux'
