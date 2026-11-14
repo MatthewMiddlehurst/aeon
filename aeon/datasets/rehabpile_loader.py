@@ -1,6 +1,7 @@
 """Dataset loading functions for RehabPile dataset."""
 
 import json
+import pickle
 import re
 import warnings
 from pathlib import Path
@@ -9,6 +10,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import urlopen
 
 import numpy as np
+from numpy._core.multiarray import _reconstruct
 
 # The root URL for the RehabPile dataset collection
 REHABPILE_ROOT_URL = "https://maxime-devanne.com/datasets/RehabPile/"
@@ -169,6 +171,56 @@ def load_rehab_pile_regression_datasets() -> list[str]:
     return _rehabpile_regression_datasets
 
 
+class _NumpyOnlyUnpickler(pickle.Unpickler):
+    """Unpickler which only resolves the globals used by numpy object arrays."""
+
+    _allowed_globals = {
+        ("numpy", "ndarray"): np.ndarray,
+        ("numpy", "dtype"): np.dtype,
+        ("numpy._core.multiarray", "_reconstruct"): _reconstruct,
+        ("numpy.core.multiarray", "_reconstruct"): _reconstruct,
+    }
+
+    def find_class(self, module, name):
+        try:
+            return self._allowed_globals[(module, name)]
+        except KeyError:
+            raise pickle.UnpicklingError(
+                f"Refusing to load '{module}.{name}' from a RehabPile file."
+            ) from None
+
+
+def _load_rehabpile_npy(path):
+    """Load a RehabPile .npy file without unpickling arbitrary objects.
+
+    Some RehabPile label files are object arrays of Python ints, which np.load can
+    only read with allow_pickle=True. That would run any code stored in a tampered
+    file, so object arrays are read with an unpickler restricted to numpy arrays
+    and converted to a regular array.
+    """
+    with open(path, "rb") as f:
+        version = np.lib.format.read_magic(f)
+        if version == (1, 0):
+            _, _, dtype = np.lib.format.read_array_header_1_0(f)
+        elif version == (2, 0):
+            _, _, dtype = np.lib.format.read_array_header_2_0(f)
+        else:
+            dtype = None
+
+        if dtype is None or not dtype.hasobject:
+            f.seek(0)
+            return np.load(f, allow_pickle=False)
+
+        arr = _NumpyOnlyUnpickler(f).load()
+
+    if not isinstance(arr, np.ndarray):
+        raise ValueError(f"{path} does not contain a numpy array.")
+    arr = np.array(arr.tolist())
+    if arr.dtype.hasobject:
+        raise ValueError(f"{path} does not contain numeric or string data.")
+    return arr
+
+
 def load_rehab_pile_dataset(
     name: str,
     split: Literal["train", "test"] = "train",
@@ -289,12 +341,8 @@ def load_rehab_pile_dataset(
                     f"name and your internet connection. Error: {e}"
                 ) from e
 
-    # RehabPile stores some arrays as object arrays, so pickle support is required.
-    X = np.load(dataset_path_fold / files_to_load["X"], allow_pickle=True)
-    y = np.load(dataset_path_fold / files_to_load["y"], allow_pickle=True)
-
-    X = np.array(X.tolist())
-    y = np.array(y.tolist())
+    X = _load_rehabpile_npy(dataset_path_fold / files_to_load["X"])
+    y = _load_rehabpile_npy(dataset_path_fold / files_to_load["y"])
 
     if return_meta:
         meta_path = dataset_path_meta / "info.json"
