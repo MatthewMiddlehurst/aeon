@@ -217,7 +217,7 @@ class ElasticSOM(BaseClusterer):
 
         for t, iteration in enumerate(iterations):
             if self.verbose:
-                print(f"Iteration {t}/{num_iterations}")  # noqa: T001, T201
+                print(f"Iteration {t}/{num_iterations}")  # noqa: T201
             decay_rate = int(t)
             weights = self._update_iteration(
                 X[iteration], weights, decay_rate, num_iterations

@@ -169,7 +169,7 @@ def subgradient_barycenter_average(
                 barycenter = prev_barycenter
                 distances_to_center = previous_distance_to_center
             if verbose:
-                print(  # noqa: T001, T201
+                print(  # noqa: T201
                     f"[Subgradient-BA] epoch {i}, early convergence change in cost "
                     f"between epochs: {previous_cost} - {cost} < tol: {tol}"
                 )
@@ -178,7 +178,7 @@ def subgradient_barycenter_average(
             barycenter = prev_barycenter
             distances_to_center = previous_distance_to_center
             if verbose:
-                print(  # noqa: T001, T201
+                print(  # noqa: T201
                     f"[Subgradient-BA] epoch {i}, early convergence cost increasing: "
                     f"{cost} > previous cost: {previous_cost}"
                 )
@@ -189,10 +189,10 @@ def subgradient_barycenter_average(
             previous_cost = cost
 
         if verbose:
-            print(f"[Subgradient-BA] epoch {i}, cost {cost}")  # noqa: T001, T201
+            print(f"[Subgradient-BA] epoch {i}, cost {cost}")  # noqa: T201
 
     if verbose:
-        print(f"[Subgradient-BA] converged epoch {i}, cost {cost}")  # noqa: T001, T201
+        print(f"[Subgradient-BA] converged epoch {i}, cost {cost}")  # noqa: T201
 
     if return_distances_to_center and return_cost:
         return barycenter, distances_to_center, cost

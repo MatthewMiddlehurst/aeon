@@ -213,10 +213,9 @@ class KASBA(BaseClusterer):
 
             if np.array_equal(prev_labels, labels):
                 if self.verbose:
-                    print(  # noqa: T001, T201
-                        f"Converged at iteration {i}, "  # noqa: T001, T201
-                        f"inertia {inertia:.5f}."  # noqa: T001, T201
-                    )  # noqa: T001, T201
+                    print(  # noqa: T201
+                        f"Converged at iteration {i}, inertia {inertia:.5f}."
+                    )
                 break
 
             prev_inertia = inertia
@@ -224,7 +223,7 @@ class KASBA(BaseClusterer):
             prev_cluster_centers = cluster_centers.copy()
 
             if self.verbose is True:
-                print(f"Iteration {i}, inertia {prev_inertia}.")  # noqa: T001, T201
+                print(f"Iteration {i}, inertia {prev_inertia}.")  # noqa: T201
 
         if inertia < prev_inertia:
             return prev_labels, prev_cluster_centers, prev_inertia, i + 1
@@ -268,7 +267,7 @@ class KASBA(BaseClusterer):
 
         inertia = np.sum(distances_to_centers**2)
         if self.verbose:
-            print(f"{inertia:.5f}", end=" --> ")  # noqa: T001, T201
+            print(f"{inertia:.5f}", end=" --> ")  # noqa: T201
         return labels, distances_to_centers, inertia
 
     def _recalculate_centroids(
