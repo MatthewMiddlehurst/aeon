@@ -50,7 +50,10 @@ class ElasticEnsemble(BaseClassifier):
     proportion_of_param_options : float, default=1
       The proportion of the parameter grid space to search optional.
     proportion_train_in_param_finding : float, default=1
-      The proportion of the train set to use in the parameter search optional.
+      The proportion of the train set to use in the parameter search. Must be in
+      the range ``(0, 1]``. When less than ``1``, cases are sampled stratified by
+      class, and at least ``min(2, class_count)`` cases of each class are retained
+      so that leave-one-out cross-validation can run.
     proportion_train_for_test : float, default=1
       The proportion of the train set to use in classifying new cases optional.
     n_jobs : int, default=1
@@ -145,6 +148,12 @@ class ElasticEnsemble(BaseClassifier):
         """
         self._n_jobs = check_n_jobs(self.n_jobs)
 
+        if not 0 < self.proportion_train_in_param_finding <= 1:
+            raise ValueError(
+                "proportion_train_in_param_finding must be in the range (0, 1], "
+                f"got {self.proportion_train_in_param_finding}."
+            )
+
         if self.distance_measures == "all":
             self._distance_measures = [
                 "dtw",
@@ -205,40 +214,35 @@ class ElasticEnsemble(BaseClassifier):
                 print(  # noqa: T201
                     "Restricting training cases for parameter optimisation: ", end=""
                 )
-            sss = StratifiedShuffleSplit(
-                n_splits=1,
-                test_size=1 - self.proportion_train_in_param_finding,
-                random_state=rand,
+            train_index = self._param_finding_train_index(X, y, rand)
+            param_train_x = (
+                [X[i] for i in train_index]
+                if isinstance(X, list)
+                else X[train_index, :]
             )
-            for train_index, _ in sss.split(X, y):
-                param_train_x = (
-                    [X[i] for i in train_index]
-                    if isinstance(X, list)
-                    else X[train_index, :]
+            param_train_y = y[train_index]
+            if der_X is not None:
+                der_param_train_x = (
+                    [der_X[i] for i in train_index]
+                    if isinstance(der_X, list)
+                    else der_X[train_index, :]
                 )
-                param_train_y = y[train_index]
-                if der_X is not None:
-                    der_param_train_x = (
-                        [der_X[i] for i in train_index]
-                        if isinstance(der_X, list)
-                        else der_X[train_index, :]
-                    )
-                if self.verbose > 0:
-                    print(  # noqa: T201
-                        f"using{len(param_train_x)} training cases instead of "
-                        f"{len(X)} for parameter optimisation"
-                    )
+            if self.verbose > 0:
+                print(  # noqa: T201
+                    f"using{len(param_train_x)} training cases instead of "
+                    f"{len(X)} for parameter optimisation"
+                )
 
-                _, count = np.unique(param_train_y, return_counts=True)
-                if len(count) < 2 or np.any(count < 2):
-                    warnings.warn(
-                        "The training data used for parameter optimisation contains "
-                        "less than 2 cases for at least one class. This may cause "
-                        "issues with optimising parameters for some distance measures. "
-                        "Consider increasing the proportion of training cases used for "
-                        "parameter optimisation.",
-                        stacklevel=2,
-                    )
+            _, count = np.unique(param_train_y, return_counts=True)
+            if len(count) < 2 or np.any(count < 2):
+                warnings.warn(
+                    "The training data used for parameter optimisation contains "
+                    "less than 2 cases for at least one class. This may cause "
+                    "issues with optimising parameters for some distance measures. "
+                    "Consider increasing the proportion of training cases used for "
+                    "parameter optimisation.",
+                    stacklevel=2,
+                )
         # else, use the full training data for optimising parameters
         else:
             if self.verbose > 0:
@@ -371,6 +375,81 @@ class ElasticEnsemble(BaseClassifier):
             self.estimators_[dm] = best_model
             self.train_accs_by_classifier_[dm] = acc
         return self
+
+    def _param_finding_train_index(self, X, y, rand):
+        """Sample the training case indices used for parameter optimisation.
+
+        Uses a ``StratifiedShuffleSplit`` to select
+        ``proportion_train_in_param_finding`` of the cases, then tops up any class
+        with fewer than ``min(2, class_count)`` cases so leave-one-out CV can run.
+        ``rand`` is left untouched by the top-up when no class needs extra cases,
+        so the sample matches a plain ``StratifiedShuffleSplit`` in that case.
+
+        If ``StratifiedShuffleSplit`` cannot split the data (fewer train or test
+        cases than classes, or a class with a single case), the cases are instead
+        sampled per class, keeping the requested proportion of each class but at
+        least ``min(2, class_count)`` cases.
+
+        Parameters
+        ----------
+        X : np.ndarray or list of np.ndarray
+            The training input samples.
+        y : np.ndarray of shape (n_cases,)
+            The class labels.
+        rand : np.random.RandomState
+            The random state used for sampling.
+
+        Returns
+        -------
+        train_index : np.ndarray
+            Indices of the cases to use for parameter optimisation.
+        """
+        classes, class_counts = np.unique(y, return_counts=True)
+        min_per_class = np.minimum(2, class_counts)
+
+        if np.sum(min_per_class) >= len(y):
+            return np.arange(len(y))
+
+        sss = StratifiedShuffleSplit(
+            n_splits=1,
+            test_size=1 - self.proportion_train_in_param_finding,
+            random_state=rand,
+        )
+        try:
+            train_index, _ = next(sss.split(X, y))
+        except ValueError:
+            # Too few train/test cases for the number of classes, or a class with a
+            # single case. Sample each class directly instead.
+            per_class = []
+            for cls_val, cls_cnt, req in zip(classes, class_counts, min_per_class):
+                n_cls = min(
+                    int(cls_cnt),
+                    max(
+                        math.floor(cls_cnt * self.proportion_train_in_param_finding),
+                        int(req),
+                    ),
+                )
+                per_class.append(
+                    rand.choice(np.flatnonzero(y == cls_val), size=n_cls, replace=False)
+                )
+            train_index = np.concatenate(per_class)
+            rand.shuffle(train_index)
+            return train_index
+
+        extras = []
+        for cls_val, req in zip(classes, min_per_class):
+            present = train_index[y[train_index] == cls_val]
+            if len(present) < req:
+                missing = np.setdiff1d(
+                    np.flatnonzero(y == cls_val), present, assume_unique=True
+                )
+                extras.append(
+                    rand.choice(missing, size=int(req) - len(present), replace=False)
+                )
+        if extras:
+            train_index = np.concatenate([train_index, *extras])
+            rand.shuffle(train_index)
+        return train_index
 
     def _predict_proba(self, X) -> np.ndarray:
         """Predict class probabilities for ``n`` instances in ``X``.

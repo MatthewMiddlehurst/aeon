@@ -2,6 +2,7 @@
 
 import numpy as np
 import pytest
+from sklearn.model_selection import StratifiedShuffleSplit
 
 from aeon.classification.distance_based import ElasticEnsemble
 
@@ -64,13 +65,12 @@ def test_proportion_train_in_param_finding():
     """Test proportion in train for parameter finding."""
     X = np.random.random(size=(10, 1, 10))
     y = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
+    # floor(0.1 * 10) < n_classes, so StratifiedShuffleSplit cannot split.
     ee = ElasticEnsemble(
         distance_measures=["dtw"], proportion_train_in_param_finding=0.1
     )
-    with pytest.raises(
-        ValueError, match="should be greater or equal to the number of classes"
-    ):
-        ee.fit(X, y)
+    ee.fit(X, y)
+    assert len(ee.predict(X)) == len(y)
     ee = ElasticEnsemble(
         distance_measures=["ddtw", "wddtw"],
         proportion_train_in_param_finding=0.4,
@@ -80,6 +80,80 @@ def test_proportion_train_in_param_finding():
     ee.get_metric_params()
     with pytest.raises(NotImplementedError, match="EE does not currently support:"):
         ElasticEnsemble._get_100_param_options("FOO")
+
+
+def test_proportion_train_in_param_finding_many_classes():
+    """Test subsampling when floor(proportion * n_cases) < n_classes."""
+    X = np.random.random(size=(30, 1, 10))
+    y = np.repeat(np.arange(10), 3)
+    ee = ElasticEnsemble(
+        distance_measures=["dtw"], proportion_train_in_param_finding=0.1
+    )
+    train_index = ee._param_finding_train_index(X, y, np.random.RandomState(0))
+    assert np.all(np.bincount(y[train_index]) == 2)
+    ee.fit(X, y)
+    assert len(ee.predict(X)) == len(y)
+
+
+def test_proportion_train_in_param_finding_small_minority_class():
+    """Test a minority class StratifiedShuffleSplit samples fewer than 2 cases of."""
+    X = np.random.random(size=(20, 1, 10))
+    y = np.array([0] * 16 + [1] * 4)
+    ee = ElasticEnsemble(
+        distance_measures=["dtw", "ddtw"], proportion_train_in_param_finding=0.1
+    )
+    train_index = ee._param_finding_train_index(X, y, np.random.RandomState(0))
+    assert len(np.unique(train_index)) == len(train_index)
+    assert np.sum(y[train_index] == 1) == 2
+    ee.fit(X, y)
+    assert len(ee.predict(X)) == len(y)
+
+
+def test_proportion_train_in_param_finding_singleton_class():
+    """Test a class with a single case is kept, with a warning."""
+    X = np.random.random(size=(11, 1, 10))
+    y = np.array([0] * 5 + [1] * 5 + [2])
+    ee = ElasticEnsemble(
+        distance_measures=["dtw"], proportion_train_in_param_finding=0.2
+    )
+    train_index = ee._param_finding_train_index(X, y, np.random.RandomState(0))
+    assert list(np.bincount(y[train_index])) == [2, 2, 1]
+    with pytest.warns(UserWarning, match="less than 2 cases"):
+        ee.fit(X, y)
+    assert len(ee.predict(X)) == len(y)
+
+
+@pytest.mark.parametrize("proportion", [0.0, -0.5, 1.5])
+def test_proportion_train_in_param_finding_invalid(proportion):
+    """Test proportion_train_in_param_finding outside (0, 1] raises an error."""
+    X = np.random.random(size=(10, 1, 10))
+    y = np.array([0] * 5 + [1] * 5)
+    ee = ElasticEnsemble(
+        distance_measures=["dtw"], proportion_train_in_param_finding=proportion
+    )
+    with pytest.raises(ValueError, match="must be in the range"):
+        ee.fit(X, y)
+
+
+def test_proportion_train_in_param_finding_matches_stratified_split():
+    """Test sampling is unchanged when StratifiedShuffleSplit already suffices.
+
+    The random state is passed on to RandomizedSearchCV, so both the sampled
+    indices and the random state afterwards must match a plain split.
+    """
+    X = np.random.random(size=(40, 1, 10))
+    y = np.array([0] * 20 + [1] * 20)
+    ee = ElasticEnsemble(proportion_train_in_param_finding=0.2)
+
+    rand = np.random.RandomState(1)
+    train_index = ee._param_finding_train_index(X, y, rand)
+
+    expected_rand = np.random.RandomState(1)
+    sss = StratifiedShuffleSplit(n_splits=1, test_size=0.8, random_state=expected_rand)
+    expected_index, _ = next(sss.split(X, y))
+
+    np.testing.assert_array_equal(train_index, expected_index)
+    assert rand.randint(2**31) == expected_rand.randint(2**31)
 
 
 def test_all_distance_measures():
