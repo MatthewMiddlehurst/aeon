@@ -170,7 +170,7 @@ def assign_prs(
     return assigned, prs_removed
 
 
-def render_row(pr: dict):  # noqa
+def render_row(pr: dict):
     """Render a single row with PR in Myst Markdown format."""
     print(  # noqa: T201
         "-",

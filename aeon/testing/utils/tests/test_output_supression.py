@@ -47,9 +47,9 @@ def test_suppress_output_false():
 
     inner_test()
 
-    assert (  # noqa: T201
-        "This should be visible." in stdout_capture.getvalue()
-    ), "stdout was incorrectly suppressed!"
-    assert (  # noqa: T201
-        "This error message should also be visible." in stderr_capture.getvalue()
-    ), "stderr was incorrectly suppressed!"
+    assert "This should be visible." in stdout_capture.getvalue(), (
+        "stdout was incorrectly suppressed!"
+    )
+    assert "This error message should also be visible." in stderr_capture.getvalue(), (
+        "stderr was incorrectly suppressed!"
+    )

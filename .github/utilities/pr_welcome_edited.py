@@ -26,8 +26,8 @@ if (
     or "## Thank you for contributing to `aeon`" not in comment_body
 ):
     with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-        print("expected_results=false", file=fh)  # noqa: T201
-        print("empty_commit=false", file=fh)  # noqa: T201
+        print("expected_results=false", file=fh)
+        print("empty_commit=false", file=fh)
     sys.exit(0)
 
 pr = issue.as_pull_request()
@@ -42,19 +42,19 @@ for option in label_options:
 repo_name = pr.head.repo.full_name
 branch_name = pr.head.ref
 with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-    print(f"repo={repo_name}", file=fh)  # noqa: T201
-    print(f"branch={branch_name}", file=fh)  # noqa: T201
+    print(f"repo={repo_name}", file=fh)
+    print(f"branch={branch_name}", file=fh)
 
 if "- [x] Regenerate expected results for testing" in comment_body:
     with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-        print("expected_results=true", file=fh)  # noqa: T201
+        print("expected_results=true", file=fh)
 else:
     with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-        print("expected_results=false", file=fh)  # noqa: T201
+        print("expected_results=false", file=fh)
 
 if "- [x] Push an empty commit to re-run CI checks" in comment_body:
     with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-        print("empty_commit=true", file=fh)  # noqa: T201
+        print("empty_commit=true", file=fh)
 else:
     with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
-        print("empty_commit=false", file=fh)  # noqa: T201
+        print("empty_commit=false", file=fh)

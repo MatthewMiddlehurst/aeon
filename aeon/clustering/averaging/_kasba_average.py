@@ -183,7 +183,7 @@ def kasba_average(
             distances_to_center = previous_distance_to_center
             cost = previous_cost
             if verbose:
-                print(  # noqa: T001, T201
+                print(  # noqa: T201
                     f"[KASBA-BA] epoch {i}, early convergence non-finite cost"
                 )
             break
@@ -194,7 +194,7 @@ def kasba_average(
                 cost = previous_cost
 
             if verbose:
-                print(  # noqa: T001, T201
+                print(  # noqa: T201
                     f"[KASBA-BA] epoch {i}, early convergence change in cost between "
                     f"epochs {cost} - {previous_cost} < tol: {tol}"
                 )
@@ -204,7 +204,7 @@ def kasba_average(
             distances_to_center = previous_distance_to_center
             cost = previous_cost
             if verbose:
-                print(  # noqa: T001, T201
+                print(  # noqa: T201
                     f"[KASBA-BA] epoch {i}, early convergence cost increasing: {cost} "
                     f"> previous cost: {previous_cost}"
                 )
@@ -215,10 +215,10 @@ def kasba_average(
             previous_cost = cost
 
         if verbose:
-            print(f"[KASBA-BA] epoch {i}, cost {cost}")  # noqa: T001, T201
+            print(f"[KASBA-BA] epoch {i}, cost {cost}")  # noqa: T201
 
     if verbose:
-        print(f"[KASBA-BA] converged epoch {i}, cost {cost}")  # noqa: T001, T201
+        print(f"[KASBA-BA] converged epoch {i}, cost {cost}")  # noqa: T201
 
     if return_distances_to_center and return_cost:
         return barycenter, distances_to_center, cost
