@@ -255,6 +255,28 @@ def test_check_collection_variance_rejects_tiny_collection(data):
             check_collection_variance(X)
 
 
+def _scale_collection(X, scale):
+    if isinstance(X, list):
+        return [x * scale for x in X]
+    return X * scale
+
+
+@pytest.mark.filterwarnings("error::RuntimeWarning")
+@pytest.mark.parametrize("data", COLLECTIONS_DATA_TYPES)
+def test_check_collection_variance_extreme_scales(data):
+    """Test check_collection_variance on large and small values, without warnings."""
+    datasets = [EQUAL_LENGTH_UNIVARIATE_CLASSIFICATION[data]["train"][0]]
+    if data in EQUAL_LENGTH_MULTIVARIATE_CLASSIFICATION.keys():
+        datasets.append(EQUAL_LENGTH_MULTIVARIATE_CLASSIFICATION[data]["train"][0])
+    for X in datasets:
+        # the sum of squares overflows
+        assert check_collection_variance(_scale_collection(X, 2.0**600))
+        # the std is far below the threshold
+        assert not check_collection_variance(
+            _scale_collection(X, 2.0**-600), raise_error=False
+        )
+
+
 def test_check_collection_variance_errors():
     """Test error catching in check_collection_variance."""
     X = np.zeros((10, 10))
