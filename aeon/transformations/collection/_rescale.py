@@ -10,8 +10,7 @@ class Normalizer(BaseCollectionTransformer):
 
     This transformer applies z-normalization  applied along the timepoints axis (the
     last axis). For multivariate data, it normalizes each channel independently.
-    A series with a standard deviation of 0 is only centred, so a constant series
-    normalises to zeros.
+    Constant series normalise to zeros.
 
     Examples
     --------
@@ -56,74 +55,25 @@ class Normalizer(BaseCollectionTransformer):
         """
         if isinstance(X, np.ndarray):
             # Case 1: X is a single 3D array
-            return _z_normalise(X)
-        # Case 2: X is a list of 2D arrays
-        return [_z_normalise(x) for x in X]
+            mean_val = np.mean(X, axis=-1, keepdims=True)
+            std_val = np.std(X, axis=-1, keepdims=True)
+            std_val = np.where(std_val == 0, 1, std_val)  # Prevent division by zero
+            X_standardized = (X - mean_val) / std_val
+            # np.mean is not exact, so a constant series can have a tiny std > 0
+            X_standardized[X.max(axis=-1) == X.min(axis=-1)] = 0
+            return X_standardized
 
-
-def _z_normalise(X: np.ndarray) -> np.ndarray:
-    """Z-normalise each series along the last axis of an array.
-
-    Ordinary series are normalised with numpy's mean and standard deviation. Series
-    for which those are inaccurate are recomputed by ``_z_normalise_unreliable``, see
-    ``_stats_unreliable``.
-    """
-    with np.errstate(over="ignore"):
-        # the overflow of large values is handled by _z_normalise_unreliable
-        mean = np.mean(X, axis=-1, keepdims=True)
-        std = np.std(X, axis=-1, keepdims=True)
-    unreliable = _stats_unreliable(X.shape[-1], mean, std)
-    # unreliable series are left as a float copy here, and recomputed below
-    Xt = (X - np.where(unreliable, 0, mean)) / np.where(unreliable, 1, std)
-    for idx in zip(*np.nonzero(unreliable[..., 0])):
-        Xt[idx] = _z_normalise_unreliable(Xt[idx])
-    return Xt
-
-
-def _stats_unreliable(n: int, mean: np.ndarray, std: np.ndarray) -> np.ndarray:
-    """Return where a series' mean and standard deviation are inaccurate.
-
-    - Values beyond about 1e154 overflow the sum of squares, and values near the
-      largest float the sum itself, which gives a mean or std of inf or NaN.
-    - The squares of deviations below about 1e-154 are subnormal or underflow to 0,
-      which loses precision or gives a std of 0.
-    - When the std is within rounding of the mean, e.g. for a near-constant series
-      far from zero, the mean's rounding error can exceed the variation of the
-      series. This includes a std of 0.
-    """
-    finfo = np.finfo(std.dtype)
-    return (
-        ~(np.isfinite(mean) & np.isfinite(std))
-        | (std < np.sqrt(n * finfo.smallest_normal))
-        | (std <= n * finfo.eps * np.abs(mean))
-    )
-
-
-def _z_normalise_unreliable(x: np.ndarray) -> np.ndarray:
-    """Z-normalise a 1D float series whose statistics are inaccurate.
-
-    The series is first scaled by the power of two that brings its largest absolute
-    value into [0.5, 1). This is exact, and its statistics then neither overflow
-    nor underflow, so a series that only had a problem of scale normalises to the
-    same values as at an ordinary scale. A series whose std is still within
-    rounding of its mean is centred a second time, and a constant series
-    normalises to zeros.
-    """
-    max_abs = np.max(np.abs(x))
-    if not np.isfinite(max_abs):
-        # a series with inf or NaN values normalises to NaN, as numpy's statistics do
-        return np.full_like(x, np.nan)
-    y = np.ldexp(x, -np.frexp(max_abs)[1])
-    mean = np.mean(y)
-    std = np.std(y)
-    if std > y.shape[0] * np.finfo(y.dtype).eps * abs(mean):
-        return (y - mean) / std
-    if y.min() == y.max():
-        return np.zeros_like(y)
-    y -= mean
-    y -= np.mean(y)
-    std = np.std(y)
-    return y / std if std > 0 else y
+        else:
+            # Case 2: X is a list of 2D arrays
+            Xt = []
+            for x in X:
+                mean_val = np.mean(x, axis=-1, keepdims=True)
+                std_val = np.std(x, axis=-1, keepdims=True)
+                std_val = np.where(std_val == 0, 1, std_val)  # Prevent division by zero
+                x_standardized = (x - mean_val) / std_val
+                x_standardized[x.max(axis=-1) == x.min(axis=-1)] = 0
+                Xt.append(x_standardized)
+            return Xt
 
 
 class MinMaxScaler(BaseCollectionTransformer):

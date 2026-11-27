@@ -620,46 +620,43 @@ def check_collection_variance(X, threshold=1e-7, raise_error=True):
 
     t = get_type(X)
 
-    # values beyond about 1e154 overflow the sum of squares, but a std of inf
-    # still exceeds any threshold, so numpy's overflow warning is only noise
-    with np.errstate(over="ignore"):
-        if t == "numpy3D":
-            ranges = np.nanmax(X, axis=2) - np.nanmin(X, axis=2)
-            stds = np.nanstd(X, ddof=0, axis=2)
-        elif t == "numpy2D":
-            ranges = (np.nanmax(X, axis=1) - np.nanmin(X, axis=1))[:, None]
-            stds = np.nanstd(X, axis=1, ddof=0)[:, None]
-        elif t == "np-list":
-            _check_list_equal_channels(X)
-            ranges = np.empty((len(X), X[0].shape[0]), dtype=float)
-            stds = np.empty((len(X), X[0].shape[0]), dtype=float)
-            for i, x in enumerate(X):
-                ranges[i, :] = np.nanmax(x, axis=1) - np.nanmin(x, axis=1)
-                stds[i, :] = np.nanstd(x, ddof=0, axis=1)
-        elif t == "df-list":
-            _check_list_equal_channels(X)
-            ranges = np.empty((len(X), X[0].shape[0]), dtype=float)
-            stds = np.empty((len(X), X[0].shape[0]), dtype=float)
-            for i, df in enumerate(X):
-                ranges[i, :] = (
-                    df.max(axis=1, skipna=True) - df.min(axis=1, skipna=True)
-                ).to_numpy(dtype=float)
-                stds[i, :] = df.std(ddof=0, axis=1, skipna=True).to_numpy(dtype=float)
-        elif t == "pd-wide":
-            ranges = (X.max(axis=1, skipna=True) - X.min(axis=1, skipna=True)).to_numpy(
-                dtype=float
-            )[:, None]
-            stds = X.std(ddof=0, axis=1, skipna=True).to_numpy(dtype=float)[:, None]
-        elif t == "pd-multiindex":
-            cases = X.index.get_level_values(0).unique()
-            stds = np.empty((len(cases), X.shape[1]), dtype=float)
-            ranges = np.empty((len(cases), X.shape[1]), dtype=float)
-            for i, case in enumerate(cases):
-                Xi = X.loc[case]  # rows=timepoints, cols=channels
-                stds[i, :] = Xi.std(ddof=0, axis=0, skipna=True).to_numpy(dtype=float)
-                ranges[i, :] = (
-                    Xi.max(axis=0, skipna=True) - Xi.min(axis=0, skipna=True)
-                ).to_numpy(dtype=float)
+    if t == "numpy3D":
+        ranges = np.nanmax(X, axis=2) - np.nanmin(X, axis=2)
+        stds = np.nanstd(X, ddof=0, axis=2)
+    elif t == "numpy2D":
+        ranges = (np.nanmax(X, axis=1) - np.nanmin(X, axis=1))[:, None]
+        stds = np.nanstd(X, axis=1, ddof=0)[:, None]
+    elif t == "np-list":
+        _check_list_equal_channels(X)
+        ranges = np.empty((len(X), X[0].shape[0]), dtype=float)
+        stds = np.empty((len(X), X[0].shape[0]), dtype=float)
+        for i, x in enumerate(X):
+            ranges[i, :] = np.nanmax(x, axis=1) - np.nanmin(x, axis=1)
+            stds[i, :] = np.nanstd(x, ddof=0, axis=1)
+    elif t == "df-list":
+        _check_list_equal_channels(X)
+        ranges = np.empty((len(X), X[0].shape[0]), dtype=float)
+        stds = np.empty((len(X), X[0].shape[0]), dtype=float)
+        for i, df in enumerate(X):
+            ranges[i, :] = (
+                df.max(axis=1, skipna=True) - df.min(axis=1, skipna=True)
+            ).to_numpy(dtype=float)
+            stds[i, :] = df.std(ddof=0, axis=1, skipna=True).to_numpy(dtype=float)
+    elif t == "pd-wide":
+        ranges = (X.max(axis=1, skipna=True) - X.min(axis=1, skipna=True)).to_numpy(
+            dtype=float
+        )[:, None]
+        stds = X.std(ddof=0, axis=1, skipna=True).to_numpy(dtype=float)[:, None]
+    elif t == "pd-multiindex":
+        cases = X.index.get_level_values(0).unique()
+        stds = np.empty((len(cases), X.shape[1]), dtype=float)
+        ranges = np.empty((len(cases), X.shape[1]), dtype=float)
+        for i, case in enumerate(cases):
+            Xi = X.loc[case]  # rows=timepoints, cols=channels
+            stds[i, :] = Xi.std(ddof=0, axis=0, skipna=True).to_numpy(dtype=float)
+            ranges[i, :] = (
+                Xi.max(axis=0, skipna=True) - Xi.min(axis=0, skipna=True)
+            ).to_numpy(dtype=float)
 
     bad_pairs = np.argwhere((stds <= threshold) & (ranges != 0))
     if bad_pairs.size > 0:
