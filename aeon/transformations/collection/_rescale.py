@@ -10,6 +10,7 @@ class Normalizer(BaseCollectionTransformer):
 
     This transformer applies z-normalization  applied along the timepoints axis (the
     last axis). For multivariate data, it normalizes each channel independently.
+    Constant series normalise to zeros.
 
     Examples
     --------
@@ -58,6 +59,8 @@ class Normalizer(BaseCollectionTransformer):
             std_val = np.std(X, axis=-1, keepdims=True)
             std_val = np.where(std_val == 0, 1, std_val)  # Prevent division by zero
             X_standardized = (X - mean_val) / std_val
+            # np.mean is not exact, so a constant series can have a tiny std > 0
+            X_standardized[X.max(axis=-1) == X.min(axis=-1)] = 0
             return X_standardized
 
         else:
@@ -68,6 +71,7 @@ class Normalizer(BaseCollectionTransformer):
                 std_val = np.std(x, axis=-1, keepdims=True)
                 std_val = np.where(std_val == 0, 1, std_val)  # Prevent division by zero
                 x_standardized = (x - mean_val) / std_val
+                x_standardized[x.max(axis=-1) == x.min(axis=-1)] = 0
                 Xt.append(x_standardized)
             return Xt
 
